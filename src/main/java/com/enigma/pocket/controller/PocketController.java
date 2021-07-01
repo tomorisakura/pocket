@@ -28,4 +28,10 @@ public class PocketController {
     public Pocket getPocketById(@PathVariable(name = "id") String id) {
         return pocketService.getPocketById(id);
     }
+
+    @DeleteMapping("/pocket/{id}")
+    public void deletePocketById(@PathVariable(name = "id") String id) { pocketService.deletePocket(id); }
+
+    @PutMapping("/pocket")
+    public Pocket updatePocket(@RequestBody Pocket pocket) { return pocketService.updatePocket(pocket); }
 }

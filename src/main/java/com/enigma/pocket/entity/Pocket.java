@@ -20,6 +20,9 @@ public class Pocket {
     @Column(name = "pocket_qty")
     private Double pocketQty;
 
+    @Column(name = "total_price")
+    private Double totalPrice;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -90,5 +93,13 @@ public class Pocket {
 
     public void setProductId(String productId) {
         this.productId = productId;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

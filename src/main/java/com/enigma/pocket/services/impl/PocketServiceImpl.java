@@ -41,6 +41,18 @@ public class PocketServiceImpl implements PocketService {
         pocket.setPocketQty(0.0);
         pocket.setCustomer(customer);
         pocket.setProduct(product);
+        pocket.setTotalPrice(0.0);
+        return pocketRepository.save(pocket);
+    }
+
+    @Override
+    public Pocket updatePocket(Pocket pocket) {
+        Customer customer = customerServices.getCustomerById(pocket.getCustomerId());
+        Product product = productServices.findProductById(pocket.getProductId());
+        pocket.setCustomer(customer);
+        pocket.setProduct(product);
+        pocket.setPocketQty(pocket.getPocketQty());
+        pocket.setTotalPrice(pocket.getPocketQty() * product.getProductPriceBuy());
         return pocketRepository.save(pocket);
     }
 
@@ -54,5 +66,10 @@ public class PocketServiceImpl implements PocketService {
     public void sellPocket(Pocket pocket, Double qty) {
         pocket.setPocketQty(pocket.getPocketQty() - qty);
         pocketRepository.save(pocket);
+    }
+
+    @Override
+    public void deletePocket(String pocketId) {
+        pocketRepository.deleteById(pocketId);
     }
 }

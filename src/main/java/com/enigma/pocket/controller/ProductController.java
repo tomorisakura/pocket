@@ -7,6 +7,7 @@ import com.enigma.pocket.entity.ProductHistoryPrice;
 import com.enigma.pocket.services.ProductHistoryPriceServices;
 import com.enigma.pocket.services.ProductServices;
 import com.enigma.pocket.util.PageWrapper;
+import com.enigma.pocket.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,8 +42,9 @@ public class ProductController {
     }
 
     @GetMapping("/product/{id}")
-    public Product getProductById(@PathVariable(name = "id") String id) {
-        return productServices.findProductById(id);
+    public Response<Product> getProductById(@PathVariable(name = "id") String id) {
+        Product data = productServices.findProductById(id);
+        return new Response<>(200, true, data);
     }
 
     @PostMapping("/product")
