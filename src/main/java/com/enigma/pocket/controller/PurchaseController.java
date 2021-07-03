@@ -21,7 +21,7 @@ public class PurchaseController {
         return purchaseService.purchase(purchase, customerId);
     }
 
-    @GetMapping("purchases")
+    @GetMapping("/purchases")
     public List<Purchase> getAllPurchases() {
         return purchaseService.findAllPurchase();
     }

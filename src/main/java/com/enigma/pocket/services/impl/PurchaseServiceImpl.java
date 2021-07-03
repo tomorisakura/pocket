@@ -60,10 +60,10 @@ public class PurchaseServiceImpl implements PurchaseService {
                 result.setProduct(pocket.getProduct());
                 result.setPrice(pocket.getProduct().getProductPriceSell());
                 result.setPurchase(purchase);
-                total = total.add(new BigDecimal(result.getPrice())).multiply(new BigDecimal(result.getQuantityInGram()));
+                total = total.add(BigDecimal.valueOf(result.getPrice())).multiply(BigDecimal.valueOf(result.getQuantityInGram()));
             }
         } else if(purchase.getPurchaseType() == 1) {
-            purchase.getPurchaseDetails().stream().forEach(result-> {
+            purchase.getPurchaseDetails().forEach(result-> {
                 Pocket pocket = pocketService.getPocketById(result.getPocket().getId());
                 pocketService.sellPocket(pocket, pocket.getPocketQty());
                 result.setProduct(pocket.getProduct());
@@ -72,13 +72,13 @@ public class PurchaseServiceImpl implements PurchaseService {
             });
         }
 
-        walletService.sendWallet(customer, total);
+//        walletService.sendWallet(customer, total);
         PurchaseDto purchaseDto = new PurchaseDto();
         purchaseDto.setEmailTo(purchase.getCustomer().getEmail());
         purchaseDto.setCustomerName(purchase.getCustomer().getFirstName() +" "+purchase.getCustomer().getLastName());
         purchaseDto.setTotal(total);
-        String jsonPurchase = objectMapper.writeValueAsString(purchaseDto);
-        kafkaTemplate.send("simple-notification",jsonPurchase);
+//        String jsonPurchase = objectMapper.writeValueAsString(purchaseDto);
+//        kafkaTemplate.send("simple-notification",jsonPurchase);
         return purchaseRepository.save(purchase);
     }
 

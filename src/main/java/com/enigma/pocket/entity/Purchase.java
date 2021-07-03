@@ -24,7 +24,7 @@ public class Purchase {
     private Customer customer;
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.PERSIST)
-    @JsonIgnoreProperties("purchase") //kenapa menggunakan anotasi jsonIgnore tidak bisa ya ?, mengapa harus JsonIgnoreProperties ?
+    @JsonIgnoreProperties("purchase")
     private Set<PurchaseDetail> purchaseDetails = new HashSet<>();
 
     private Integer purchaseType;
