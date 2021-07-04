@@ -24,6 +24,6 @@ public interface ProductRepository extends JpaRepository<Product, String>, JpaSp
     //projection
     @Query(value = "SELECT new com.enigma.pocket.dto.Prices(p.productPriceSell, p.productPriceBuy) FROM Product p")
     List<Prices> prices();
-
+    
     Product findProductByProductName(String name);
 }

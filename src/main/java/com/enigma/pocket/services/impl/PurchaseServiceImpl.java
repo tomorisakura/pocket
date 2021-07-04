@@ -1,6 +1,5 @@
 package com.enigma.pocket.services.impl;
 
-import com.enigma.pocket.dto.PurchaseDto;
 import com.enigma.pocket.entity.Customer;
 import com.enigma.pocket.entity.Pocket;
 import com.enigma.pocket.entity.Purchase;
@@ -13,18 +12,13 @@ import com.enigma.pocket.services.WalletService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class PurchaseServiceImpl implements PurchaseService {
@@ -52,34 +46,39 @@ public class PurchaseServiceImpl implements PurchaseService {
         Customer customer = customerServices.getCustomerById(customerId);
         purchase.setCustomer(customer);
         purchase.setPurchaseDate(LocalDateTime.now());
-        BigDecimal total = BigDecimal.ZERO;
-        if (purchase.getPurchaseType() == 0) {
-            for (PurchaseDetail result: purchase.getPurchaseDetails()) {
-                Pocket pocket = pocketService.getPocketById(result.getPocket().getId());
-                pocketService.topUp(pocket, result.getQuantityInGram());
-                result.setProduct(pocket.getProduct());
-                result.setPrice(pocket.getProduct().getProductPriceSell());
-                result.setPurchase(purchase);
-                total = total.add(BigDecimal.valueOf(result.getPrice())).multiply(BigDecimal.valueOf(result.getQuantityInGram()));
-            }
-        } else if(purchase.getPurchaseType() == 1) {
-            purchase.getPurchaseDetails().forEach(result-> {
-                Pocket pocket = pocketService.getPocketById(result.getPocket().getId());
-                pocketService.sellPocket(pocket, pocket.getPocketQty());
-                result.setProduct(pocket.getProduct());
-                result.setPrice(pocket.getProduct().getProductPriceSell());
-                result.setPurchase(purchase);
-            });
+        AtomicReference<BigDecimal> total = new AtomicReference<>(BigDecimal.ZERO);
+        switch (purchase.getPurchaseType()) {
+            case "BUY":
+                for (PurchaseDetail result: purchase.getPurchaseDetails()) {
+                    Pocket pocket = getPocketFromRemote(result, purchase);
+                    total.set(BigDecimal.valueOf(result.getPrice() * result.getQuantityInGram()));
+                    pocketService.topUp(pocket, result.getQuantityInGram(), total.get());
+                }
+                break;
+            case "SELL":
+                purchase.getPurchaseDetails().forEach(result-> {
+                    Pocket pocket = getPocketFromRemote(result, purchase);
+                    total.set(BigDecimal.valueOf(result.getPrice() * result.getQuantityInGram()));
+                    pocketService.sellPocket(pocket, result.getQuantityInGram(), total.get());
+                });
+                break;
         }
-
 //        walletService.sendWallet(customer, total);
-        PurchaseDto purchaseDto = new PurchaseDto();
-        purchaseDto.setEmailTo(purchase.getCustomer().getEmail());
-        purchaseDto.setCustomerName(purchase.getCustomer().getFirstName() +" "+purchase.getCustomer().getLastName());
-        purchaseDto.setTotal(total);
+//        PurchaseDto purchaseDto = new PurchaseDto();
+//        purchaseDto.setEmailTo(purchase.getCustomer().getEmail());
+//        purchaseDto.setCustomerName(purchase.getCustomer().getFirstName() +" "+purchase.getCustomer().getLastName());
+//        purchaseDto.setTotal(total);
 //        String jsonPurchase = objectMapper.writeValueAsString(purchaseDto);
 //        kafkaTemplate.send("simple-notification",jsonPurchase);
         return purchaseRepository.save(purchase);
+    }
+
+    private Pocket getPocketFromRemote(PurchaseDetail purchaseDetail, Purchase purchase) {
+        Pocket pocket = pocketService.getPocketById(purchaseDetail.getPocket().getId());
+        purchaseDetail.setProduct(pocket.getProduct());
+        purchaseDetail.setPrice(pocket.getProduct().getProductPriceSell());
+        purchaseDetail.setPurchase(purchase);
+        return pocket;
     }
 
     @Override
@@ -90,5 +89,10 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public List<Purchase> findAllPurchase() {
         return purchaseRepository.findAll();
+    }
+
+    @Override
+    public List<Purchase> findPurchaseByCustomerId(String id) {
+        return purchaseRepository.findPurchaseByCustomer_Id(id);
     }
 }

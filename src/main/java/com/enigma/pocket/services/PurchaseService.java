@@ -9,4 +9,5 @@ public interface PurchaseService {
     Purchase purchase(Purchase purchase, String customerId) throws JsonProcessingException;
     Purchase findPurchaseById(String id);
     List<Purchase> findAllPurchase();
+    List<Purchase> findPurchaseByCustomerId(String id);
 }

@@ -1,6 +1,7 @@
 package com.enigma.pocket.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -19,6 +20,10 @@ public class Purchase {
 
     private LocalDateTime purchaseDate;
 
+    @Transient
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String customerId;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -27,7 +32,8 @@ public class Purchase {
     @JsonIgnoreProperties("purchase")
     private Set<PurchaseDetail> purchaseDetails = new HashSet<>();
 
-    private Integer purchaseType;
+    //private Integer purchaseType;
+    private String purchaseType;
 
     public String getPurchaseId() {
         return purchaseId;
@@ -61,11 +67,17 @@ public class Purchase {
         this.purchaseDetails = purchaseDetails;
     }
 
-    public Integer getPurchaseType() {
-        return purchaseType;
+    public String getPurchaseType() { return purchaseType; }
+
+    public void setPurchaseType(String purchaseType) {
+        this.purchaseType = purchaseType;
     }
 
-    public void setPurchaseType(Integer purchaseType) {
-        this.purchaseType = purchaseType;
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }

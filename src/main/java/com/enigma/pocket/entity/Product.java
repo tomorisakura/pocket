@@ -24,6 +24,7 @@ public class Product {
     private Integer productStatus;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnoreProperties("product")
     private List<ProductHistoryPrice> historyPrices = new ArrayList<>();
 
     @Column(name = "created_at")

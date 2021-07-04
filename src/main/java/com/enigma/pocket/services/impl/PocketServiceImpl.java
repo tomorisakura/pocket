@@ -10,6 +10,7 @@ import com.enigma.pocket.services.ProductServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -41,7 +42,7 @@ public class PocketServiceImpl implements PocketService {
         pocket.setPocketQty(0.0);
         pocket.setCustomer(customer);
         pocket.setProduct(product);
-        pocket.setTotalPrice(0.0);
+        pocket.setTotalPrice(BigDecimal.ZERO);
         return pocketRepository.save(pocket);
     }
 
@@ -52,19 +53,20 @@ public class PocketServiceImpl implements PocketService {
         pocket.setCustomer(customer);
         pocket.setProduct(product);
         pocket.setPocketQty(pocket.getPocketQty());
-        pocket.setTotalPrice(pocket.getPocketQty() * product.getProductPriceBuy());
         return pocketRepository.save(pocket);
     }
 
     @Override
-    public void topUp(Pocket pocket, Double qty) {
+    public void topUp(Pocket pocket, Double qty, BigDecimal total) {
         pocket.setPocketQty(pocket.getPocketQty()+qty);
+        pocket.setTotalPrice(pocket.getTotalPrice().add(total));
         pocketRepository.save(pocket);
     }
 
     @Override
-    public void sellPocket(Pocket pocket, Double qty) {
+    public void sellPocket(Pocket pocket, Double qty, BigDecimal total) {
         pocket.setPocketQty(pocket.getPocketQty() - qty);
+        pocket.setTotalPrice(pocket.getTotalPrice().subtract(total));
         pocketRepository.save(pocket);
     }
 

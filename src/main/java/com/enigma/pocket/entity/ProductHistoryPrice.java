@@ -20,7 +20,6 @@ public class ProductHistoryPrice {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    @JsonIgnoreProperties({"historyPrices"}) //mengabaikan dan dipasang di child
     private Product product;
 
     public ProductHistoryPrice() {
