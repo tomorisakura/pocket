@@ -75,4 +75,9 @@ public class CustomerServiceImpl implements CustomerServices {
     public Customer login(String username, String password) {
         return customerRepository.findCustomerByUsernameAndPassword(username, password);
     }
+
+    @Override
+    public Customer findCustomerById(String customerId) {
+        return customerRepository.findById(customerId).get();
+    }
 }

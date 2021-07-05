@@ -74,4 +74,11 @@ public class PocketServiceImpl implements PocketService {
     public void deletePocket(String pocketId) {
         pocketRepository.deleteById(pocketId);
     }
+
+    @Override
+    public List<Pocket> findPocketByCustomerAndProduct(String customerId, String productId) {
+        Customer customer = customerServices.findCustomerById(customerId);
+        Product product = productServices.findProductById(productId);
+        return pocketRepository.findPocketByProductAndCustomer(product, customer);
+    }
 }

@@ -19,4 +19,5 @@ public interface CustomerServices{
     public List<Customer> findCustomerByFirstNameOrEmail(String firstName, String email, Pageable pageable);
     Customer findCustomerByPocket(String id);
     Customer login(String username, String password);
+    Customer findCustomerById(String customerId);
 }
