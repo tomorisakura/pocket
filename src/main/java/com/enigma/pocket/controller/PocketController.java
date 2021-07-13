@@ -2,7 +2,7 @@ package com.enigma.pocket.controller;
 
 import com.enigma.pocket.entity.Pocket;
 import com.enigma.pocket.services.PocketService;
-import com.enigma.pocket.util.Response;
+import com.enigma.pocket.util.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,30 +16,37 @@ public class PocketController {
     PocketService pocketService;
 
     @PostMapping("/pocket")
-    public Pocket postPocket(@RequestBody Pocket pocket) {
-        return pocketService.createPocket(pocket);
+    public ResponseMessage<Pocket> postPocket(@RequestBody Pocket pocket) {
+        Pocket data = pocketService.createPocket(pocket);
+        return ResponseMessage.success(200, data);
     }
 
     @GetMapping("/pockets")
-    public List<Pocket> getAllPocket() {
-        return pocketService.getAllPocket();
+    public ResponseMessage<List<Pocket>> getAllPocket() {
+        List<Pocket> data = pocketService.getAllPocket();
+        return ResponseMessage.success(200, data);
     }
 
     @GetMapping("/pocket/{id}")
-    public Pocket getPocketById(@PathVariable(name = "id") String id) {
-        return pocketService.getPocketById(id);
+    public ResponseMessage<Pocket> getPocketById(@PathVariable(name = "id") String id) {
+        Pocket data = pocketService.getPocketById(id);
+        return ResponseMessage.success(200, data);
     }
 
     @DeleteMapping("/pocket/{id}")
     public void deletePocketById(@PathVariable(name = "id") String id) { pocketService.deletePocket(id); }
 
     @PutMapping("/pocket")
-    public Pocket updatePocket(@RequestBody Pocket pocket) { return pocketService.updatePocket(pocket); }
+    public ResponseMessage<Pocket> updatePocket(@RequestBody Pocket pocket) {
+        Pocket data = pocketService.updatePocket(pocket);
+        return ResponseMessage.success(200, data);
+    }
 
     @GetMapping("/customer-pocket")
-    public Response<List<Pocket>> findPocketByProductAndCustomer(@RequestParam(name = "productId") String productId,
-                                                           @RequestParam(name = "customerId") String customerId) {
+    public ResponseMessage<List<Pocket>> findPocketByProductAndCustomer(
+            @RequestParam(name = "productId") String productId,
+            @RequestParam(name = "customerId") String customerId) {
         List<Pocket> data = pocketService.findPocketByCustomerAndProduct(customerId, productId);
-        return new Response<>(200, true, data);
+        return ResponseMessage.success(200, data);
     }
 }

@@ -7,14 +7,13 @@ import com.enigma.pocket.entity.ProductHistoryPrice;
 import com.enigma.pocket.services.ProductHistoryPriceServices;
 import com.enigma.pocket.services.ProductServices;
 import com.enigma.pocket.util.PageWrapper;
-import com.enigma.pocket.util.Response;
+import com.enigma.pocket.util.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -28,8 +27,9 @@ public class ProductController {
     ProductHistoryPriceServices productHistoryPriceServices;
 
     @GetMapping("/products")
-    public List<Product> getAllProduct() {
-        return productServices.findAllProduct();
+    public ResponseMessage<List<Product>> getAllProduct() {
+        List<Product> data = productServices.findAllProduct();
+        return ResponseMessage.success(200, data);
     }
 
     @GetMapping("/product")
@@ -42,19 +42,21 @@ public class ProductController {
     }
 
     @GetMapping("/product/{id}")
-    public Response<Product> getProductById(@PathVariable(name = "id") String id) {
+    public ResponseMessage<Product> getProductById(@PathVariable(name = "id") String id) {
         Product data = productServices.findProductById(id);
-        return new Response<>(200, true, data);
+        return ResponseMessage.success(200, data);
     }
 
     @PostMapping("/product")
-    public Product insertProduct(@RequestBody Product product) {
-        return productServices.insertProduct(product);
+    public ResponseMessage<Product> insertProduct(@RequestBody Product product) {
+        Product data = productServices.insertProduct(product);
+        return ResponseMessage.success(200, data);
     }
 
     @PutMapping("/product")
-    public Product updateProductById(@RequestBody Product product) {
-        return productServices.updateProduct(product);
+    public ResponseMessage<Product> updateProductById(@RequestBody Product product) {
+        Product data = productServices.updateProduct(product);
+        return ResponseMessage.success(200, data);
     }
 
     @DeleteMapping("/product/delete/{id}")
@@ -63,13 +65,15 @@ public class ProductController {
     }
 
     @GetMapping("/product/{id}/history")
-    public List<ProductHistoryPrice> getHistoryByProduct(@PathVariable(name = "id") String id) {
-        return productHistoryPriceServices.findAllByProduct(id);
+    public ResponseMessage<List<ProductHistoryPrice>> getHistoryByProduct(@PathVariable(name = "id") String id) {
+        List<ProductHistoryPrice> data = productHistoryPriceServices.findAllByProduct(id);
+        return ResponseMessage.success(200, data);
     }
 
     @GetMapping("/product/name/{productName}")
-    public Product getProductByName(@PathVariable(name = "productName") String productName) {
-        return productServices.findProductByName(productName);
+    public ResponseMessage<Product> getProductByName(@PathVariable(name = "productName") String productName) {
+        Product data = productServices.findProductByName(productName);
+        return ResponseMessage.success(200, data);
     }
 
 }

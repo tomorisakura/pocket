@@ -2,7 +2,7 @@ package com.enigma.pocket.controller;
 
 import com.enigma.pocket.entity.Purchase;
 import com.enigma.pocket.services.PurchaseService;
-import com.enigma.pocket.util.Response;
+import com.enigma.pocket.util.ResponseMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,19 +17,22 @@ public class PurchaseController {
     PurchaseService purchaseService;
 
     @PostMapping("/purchase")
-    public Purchase postPurchase(@RequestParam(name = "customerId") String customerId,
-                                 @RequestBody Purchase purchase) throws JsonProcessingException {
-        return purchaseService.purchase(purchase, customerId);
+    public ResponseMessage<Purchase> postPurchase(
+            @RequestParam(name = "customerId") String customerId,
+            @RequestBody Purchase purchase) throws JsonProcessingException {
+        Purchase data = purchaseService.purchase(purchase, customerId);
+        return ResponseMessage.success(200, data);
     }
 
     @GetMapping("/purchases")
-    public List<Purchase> getAllPurchases() {
-        return purchaseService.findAllPurchase();
+    public ResponseMessage<List<Purchase>> getAllPurchases() {
+        List<Purchase> data = purchaseService.findAllPurchase();
+        return ResponseMessage.success(200, data);
     }
 
     @GetMapping("/customer/{id}/purchase")
-    public Response<List<Purchase>> getPurchaseByCustomerId(@PathVariable(name = "id") String id) {
+    public ResponseMessage<List<Purchase>> getPurchaseByCustomerId(@PathVariable(name = "id") String id) {
         List<Purchase> data = purchaseService.findPurchaseByCustomerId(id);
-        return new Response<>(200, true, data);
+        return ResponseMessage.success(200, data);
     }
 }
